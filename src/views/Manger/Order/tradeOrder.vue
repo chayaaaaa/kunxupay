@@ -8,7 +8,7 @@
     <mt-popup v-model="showOrgan" popup-transition="popup-fade">
       <!-- title -->
       <div class="title">选 择 代 理 商</div>
-      <!--       <select
+      <select
         class="select"
         v-model="optionValue"
         :label-in-value="true"
@@ -21,16 +21,13 @@
           :value="item.id"
           :label="item.text"
         >{{item.text}}</option>
-      </select>-->
-      <van-picker :columns="queryAgents" @change="onChange"/>
+      </select>
       <div class="box cancel" @click="cancel()">取消</div>
       <div class="box Confirm" @click="Confirm()">确认</div>
     </mt-popup>
     <!-- 选择栏 -->
     <div class="Choice">
-      <!--       <li class="Cli" @click="showOrgan = true">{{showText}}</li> -->
-      <li class="Cli" @click="showOrgan = true" v-if="display==true">{{showText}}</li>
-      <li class="Cli" @click="showOrgan = true" v-if="showThis==true">{{textvalue}}</li>
+      <li class="Cli" @click="showOrgan = true">{{showText}}</li>
       <div class="CicTime">
         <el-date-picker
           v-model="rangeTime"
@@ -147,8 +144,6 @@ export default {
       cur: 0,
       /* 选择弹框 */
       showOrgan: false,
-      display: true,
-      showThis: false,
       value: "",
       data: "",
       /* 时间选择器的值 */
@@ -294,19 +289,9 @@ export default {
           Toast(err.message);
         });
       this.showOrgan = false;
-      this.display = false;
-      this.showThis = true;
     },
     cancel() {
       this.showOrgan = false;
-    },
-    onChange(picker, value, index) {
-      this.textvalue = value.text;
-      this.value = value.id;
-      console.log(value);
-      console.log(this.textvalue);
-      console.log(this.value);
-      console.log(index);
     },
     getIdValue(event) {
       this.value = event.target.value;
@@ -455,15 +440,6 @@ export default {
     border: 1px solid #1c8cff; /* no */
   }
 }
-  /* 时间选择栏 */
-  .Choice {
-    width: 100%;
-    height: 3.36rem;
-    .Cli {
-      overflow: hidden;
-     /*  white-space: nowrap; */
-    }
-  }
 /* 没有数据 */
 .nothing {
   width: 100%;

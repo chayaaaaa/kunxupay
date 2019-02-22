@@ -370,45 +370,12 @@ export const addRealNameAuth = params => {
 export const showAllMessage = params => {
     let qdcrmUserId = JSON.parse(window.localStorage.getItem('userInfo')).qdcrmUserId;
     let access_token = JSON.parse(window.localStorage.getItem('token')).access_token;
+/*     let type = '3'
+    let pageNum = '1' */
+    //&type=${type}&pageNum=${pageNum}
     return axios({
         method: 'GET',
         url: `${BASE_URL}/msmng/api/message/showAllMessage?qdcrmUserId=${qdcrmUserId}&access_token=${access_token}`,
-        data: params,
-    }).then().catch(function (reason) {
-        console.log('catch:', reason);
-    })
-}
-// 获取查询提现权限数据接口
-export const queryDrawPermissions = params => {
-    let qdcrmUserId = JSON.parse(window.localStorage.getItem('userInfo')).qdcrmUserId;
-    let access_token = JSON.parse(window.localStorage.getItem('token')).access_token;
-    return axios({
-        method: 'GET',
-        url: `${BASE_URL}/msmng/api/permissions/queryDrawPermissions?qdcrmUserId=${qdcrmUserId}&access_token=${access_token}`,
-        data: params,
-    }).then().catch(function (reason) {
-        console.log('catch:', reason);
-    })
-}
-// 获取资金信息数据接口
-export const getCashDetails = params => {
-    let qdcrmUserId = JSON.parse(window.localStorage.getItem('userInfo')).qdcrmUserId;
-    let access_token = JSON.parse(window.localStorage.getItem('token')).access_token;
-    return axios({
-        method: 'GET',
-        url: `${BASE_URL}/msmng/api/withdrawdeposit/getCash?qdcrmUserId=${qdcrmUserId}&access_token=${access_token}`,
-        data: params,
-    }).then().catch(function (reason) {
-        console.log('catch:', reason);
-    })
-}
-// 获取系统支持的所有银行列表数据接口
-export const queryBankSup = params => {
-    let qdcrmUserId = JSON.parse(window.localStorage.getItem('userInfo')).qdcrmUserId;
-    let access_token = JSON.parse(window.localStorage.getItem('token')).access_token;
-    return axios({
-        method: 'GET',
-        url: `${BASE_URL}/msmng/api/bankcard/queryBankSup?qdcrmUserId=${qdcrmUserId}&access_token=${access_token}`,
         data: params,
     }).then().catch(function (reason) {
         console.log('catch:', reason);

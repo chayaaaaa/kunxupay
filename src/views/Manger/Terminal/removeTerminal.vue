@@ -99,6 +99,8 @@ export default {
       postfix: "",
       /* 选择弹框 */
       showOrgan: false,
+      /* 选择器 */
+      columns: ["杭州", "宁波", "温州", "嘉兴", "湖州"],
       // 显示提交成功页面
       current: 0,
       showsuccessPage: true, // 提交页面

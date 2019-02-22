@@ -1,122 +1,97 @@
 <template>
   <!-- =====================   添 加 银 行 卡 页 面   =======================-->
   <div class="addBankCards">
-    <div class="header">
-      <li class="header_left" @click="prev()">返回</li>
-      <li class="p">添 加 银 行 卡</li>
-    </div>
+    <mt-header title="添 加 银 行 卡" fixed>
+      <mt-button icon="back" @click="prev()" class="header_left" slot="left"></mt-button>
+    </mt-header>
     <!-- ================       选 项 卡      =============== -->
     <div class="tabControl">
-      <li @click="showValueOne()" :class="{'cur':showNoOne==true}">个人账户
-        <p v-show="showNoOne==true"></p>
+      <li @click="current=1" :class="{'cur':current == 1}">个人账户
+        <p v-show="current==1"></p>
       </li>
-      <li @click="showValueTwo()" :class="{'cur':showNoTwo==true}">企业账户
-        <p v-show="showNoTwo==true"></p>
+      <li @click="current=2" :class="{'cur':current == 2}">企业账户
+        <p v-show="current==2"></p>
       </li>
     </div>
-    <div class="showNoOne" v-if="showNoOne == true">
-      <!-- 提示栏目 -->
-      <div class="list_Reminder">请绑定持卡人本人银行卡</div>
-      <!-- 输入栏 -->
-      <ul class="inputField">
-        <mt-field label="持卡人" placeholder="请输入真实姓名" v-model="user" disabled></mt-field>
-        <mt-field
-          label="身份证号"
-          placeholder="请输入身份证号码"
-          minlenght="18"
-          maxlenght="18"
-          type="number"
-          v-model="ID"
-          disabled
-        ></mt-field>
-        <mt-field label="银行名称" readonly>
-          <select v-model="bankName" @change="getIdValue($event)" class="select" id="optionText">
-            <option selected value disabled>请选择银行</option>
-            <option
-              v-for="item in list"
-              :value="item.bankCode"
-              :key="item.bankCode"
-              :label="item.bankName"
-            >{{item.text}}</option>
-          </select>
-        </mt-field>
-        <mt-field label="银行卡号" placeholder="请输入银行卡号" v-model="bankNumber"></mt-field>
-        <mt-field label="手机" placeholder="请输入手机预留号" type="tel" v-model="phone">
-          <img src="@/assets/image/Mine/Wallet/prompt .png" @click="CAPION()">
-        </mt-field>
-        <mt-field label="验证码" v-model="captcha" placeholder="请输入验证码">
-          <!--  <li>发送验证码</li> -->
-          <li v-show="sendAuthCode" class="auth_text auth_text_blue" @click="getAuthCode">获取验证码</li>
-          <li v-show="!sendAuthCode" class="auth_text glay">
-            <span class="auth_text_blue">{{auth_time}}</span> S
-          </li>
-        </mt-field>
-      </ul>
-      <button
-        type="submit"
-        @click.prevent="onSubmit(user,ID,bankName,bankNumber,phone,captcha,selected)"
-      >提交</button>
-    </div>
-
-    <div class="showNoTwo" v-if="showNoTwo == true">
-      <div class="list_Reminder">请绑定法人所属企业账户</div>
-      <ul class="inputField">
-        <mt-field label="企业账户" placeholder="请输入企业账户" v-model="corporate"></mt-field>
-        <mt-field label="企业账号" placeholder="请输入企业账号" v-model="Identification"></mt-field>
-        <mt-field label="银行名称" readonly>
-          <select v-model="bankName" @change="getIdValue($event)" class="select" id="optionText">
-            <option selected value disabled>请选择银行</option>
-            <option
-              v-for="item in list"
-              :value="item.bankCode"
-              :key="item.bankCode"
-              :label="item.bankName"
-            >{{item.text}}</option>
-          </select>
-        </mt-field>
-        <mt-field label="开户行" placeholder="请输入开户行" v-model="openbankName"></mt-field>
-        <div class="upimg">
-          <!-- 营业执照 -->
-          <vue-clip
-            :img="option.Operating"
-            :dataUrlType="option.dataUrlType"
-            :accept="option.accept"
-            :autoClip="option.autoClip"
-            :autoClipWidth="option.autoClipWidth"
-            :autoClipHeight="option.autoClipHeight"
-            :fixed="option.fixed"
-            :outputSize="option.outputSize"
-            :theme="option.theme"
-            :fixedNumber="option.fixedNumber"
-            @finish="Operat"
-          ></vue-clip>
-          <!-- 开户证明 -->
-          <vue-clip
-            :img="option.opening "
-            :dataUrlType="option.dataUrlType"
-            :accept="option.accept"
-            :autoClip="option.autoClip"
-            :autoClipWidth="option.autoClipWidth"
-            :autoClipHeight="option.autoClipHeight"
-            :fixed="option.fixed"
-            :outputSize="option.outputSize"
-            :theme="option.theme"
-            :fixedNumber="option.fixedNumber"
-            @finish="open"
-          ></vue-clip>
-          <button type="submit" class="btn" @click.prevent="next()">提交</button>
-        </div>
-      </ul>
-    </div>
-
-    <!-- 未实名认证 -->
-    <mt-popup v-model="showError" popup-transition="popup-fade">
-      <div class="alertMsg">
-        <div class="alertMsgText">请先进行实名认证~</div>
-        <div class="box alertMsgForgetPassword" @click="toRenZheng()">去实名认证</div>
-        <div class="box retry" @click="cancel()">取消</div>
+    <!-- 提示栏目 -->
+    <div class="list_Reminder" v-show="current==1">请绑定持卡人本人银行卡</div>
+    <div class="list_Reminder" v-show="current==2">请绑定法人所属企业账户</div>
+    <!-- 输入栏 -->
+    <ul class="inputField" v-show="current == 1">
+      <mt-field label="持卡人" placeholder="请输入真实姓名" v-model="user"></mt-field>
+      <mt-field
+        label="身份证号"
+        placeholder="请输入身份证号码"
+        minlenght="18"
+        maxlenght="18"
+        type="number"
+        v-model="ID"
+      ></mt-field>
+      <mt-field label="银行名称" readonly>
+        <select v-model="bankName">
+          <option disabled value>请选择银行</option>
+          <option v-for="item in list" v-bind:value="item.value" :key="item.a">{{item.text}}</option>
+        </select>
+      </mt-field>
+      <mt-field label="银行卡号" placeholder="请输入银行卡号" v-model="bankNumber"></mt-field>
+      <mt-field label="手机" placeholder="请输入手机预留号" type="tel" v-model="phone">
+        <img src="@/assets/image/Mine/Wallet/prompt .png" @click="CAPION()">
+      </mt-field>
+      <mt-field label="验证码" v-model="captcha" placeholder="请输入验证码">
+        <li>发送验证码</li>
+      </mt-field>
+    </ul>
+    <button
+      v-show="current == 1"
+      type="submit"
+      @click.prevent="onSubmit(user,ID,bankName,bankNumber,phone,captcha,selected)"
+    >提交</button>
+    <ul class="inputField" v-show="current == 2">
+      <mt-field label="企业账户" placeholder="请输入企业账户" v-model="corporate"></mt-field>
+      <mt-field label="企业账号" placeholder="请输入企业账号" v-model="Identification"></mt-field>
+      <mt-field label="银行名称" readonly>
+        <select v-model="whatbankName">
+          <option disabled value>请选择银行</option>
+          <option v-for="item in list" v-bind:value="item.value" :key="item.a">{{item.text}}</option>
+        </select>
+      </mt-field>
+      <mt-field label="开户行" placeholder="请输入开户行" v-model="openbankName"></mt-field>
+      <div class="upimg">
+        <!-- 营业执照 -->
+        <vue-clip
+          :img="option.Operating"
+          :dataUrlType="option.dataUrlType"
+          :accept="option.accept"
+          :autoClip="option.autoClip"
+          :autoClipWidth="option.autoClipWidth"
+          :autoClipHeight="option.autoClipHeight"
+          :fixed="option.fixed"
+          :outputSize="option.outputSize"
+          :theme="option.theme"
+          :fixedNumber="option.fixedNumber"
+          @finish="Operating"
+        ></vue-clip>
+        <!-- 开户证明 -->
+        <vue-clip
+          :img="option.opening "
+          :dataUrlType="option.dataUrlType"
+          :accept="option.accept"
+          :autoClip="option.autoClip"
+          :autoClipWidth="option.autoClipWidth"
+          :autoClipHeight="option.autoClipHeight"
+          :fixed="option.fixed"
+          :outputSize="option.outputSize"
+          :theme="option.theme"
+          :fixedNumber="option.fixedNumber"
+          @finish="opening"
+        ></vue-clip>
+        <button
+          type="submit"
+          class="btn"
+          @click.prevent="next(corporate,Identification,whatbankName,selected,openbankName)"
+        >提交</button>
       </div>
-    </mt-popup>
+    </ul>
   </div>
 </template>
 <script>
@@ -125,12 +100,6 @@ import qs from "qs";
 import { VueClip } from "vue-pic-clip";
 import { Toast, MessageBox } from "mint-ui";
 import "@/CSS/alert.css";
-import {
-  queryTwoElementsResult,
-  queryBankSup,
-  getRefreshToken,
-  BASE_URL
-} from "@/api/api.js";
 export default {
   inject: ["reload"],
   name: "addBankCards",
@@ -144,15 +113,34 @@ export default {
       bankNumber: "", // 卡号
       phone: "", // 预留手机号
       captcha: "", // 验证码
+      selected: "", // 选择银行
       // 企业
       corporate: "", // 企业账户
       Identification: "", // 企业账号
+      whatbankName: "", //银行名称
       openbankName: "", // 开户行
-      bankComName: "", //银行名称
-      list: [],
-      Operating: "", // 营业执照
-      opening: "", // 开户证明
-      showComText: "", // 选择银行
+      list: [
+        {
+          text: "中国工商银行",
+          value: "1"
+        },
+        {
+          text: "中国建设银行",
+          value: "2"
+        },
+        {
+          text: "工商银行",
+          value: "3"
+        },
+        {
+          text: "工商银行",
+          value: "4"
+        },
+        {
+          text: "工商银行",
+          value: "5"
+        }
+      ],
       option: {
         Operating: require("@/assets/image/Mine/Wallet/charter.png"), // 营业执照
         opening: require("@/assets/image/Mine/Wallet/Account .png"), // 开户证明
@@ -166,21 +154,7 @@ export default {
         fixedNumber3: [0.3, 0.5], // 宽高比 w/h
         theme: "rect", // 样式风格，默认rect:方形，circle:圆形
         clipImg: "" // 裁剪后的图片
-      },
-      showError: false,
-      showBank: false,
-      showDefBank: true,
-      qdcrmUserId: JSON.parse(window.localStorage.getItem("userInfo"))
-        .qdcrmUserId, // 所属上级商户号
-      access_token: JSON.parse(window.localStorage.getItem("token"))
-        .access_token,
-      merchantId: JSON.parse(window.localStorage.getItem("userInfo"))
-        .merchantId,
-      showIndexText: "",
-      sendAuthCode: true /*布尔值，通过v-show控制显示‘获取按钮’还是‘倒计时’ */,
-      auth_time: 0 /*倒计时 计数器*/,
-      showNoOne: true, // 添加个人账户
-      showNoTwo: false // 添加企业账户
+      }
     };
   },
   methods: {
@@ -193,92 +167,45 @@ export default {
     showPopup() {
       this.popupVisible = true;
     },
-    // 个人账户
-    showValueOne() {
-      this.showNoOne = true;
-      this.showNoTwo = false;
-    },
-    // 企业账户
-    showValueTwo() {
-      this.showNoOne = false;
-      this.showNoTwo = true;
-    },
     // 营业执照
-    Operat(name, url) {
+    Operating(name, url) {
       // 完成上传图片，返回图片名称、数据
+      console.log("data", url);
       let formData = new FormData();
-      this.Operating = url.slice(23);
-      console.log(this.Operating);
+      let Operating = url.slice(23);
+      formData.append("files1", Operating);
+      console.log("files1", Operating);
+      console.log(Operating);
+      formData.append("name", name);
+      console.log("name", name);
+      window.localStorage.setItem("Operating", JSON.stringify(Operating));
     },
     // 开户证明
-    open(name, url) {
+    opening(name, url) {
       // 完成上传图片，返回图片名称、数据
+      console.log("data", url);
       let formData = new FormData();
-      this.opening = url.slice(23);
-      console.log(this.opening);
+      let opening = url.slice(23);
+      formData.append("files1", opening);
+      console.log("files1", opening);
+      console.log(opening);
+      formData.append("name", name);
+      console.log("name", name);
+      window.localStorage.setItem("opening", JSON.stringify(opening));
     },
-    // 跳转到实名认证
-    toRenZheng() {
-      this.$router.push("/Identification");
-    },
-    cancel() {
-      this.$router.push("/BKManagement");
-    },
-    // 个人账户获取option的text
-    getIdValue(event) {
-      this.value = event.target.value;
-      console.log(this.value);
-      var myselect = document.getElementById("optionText");
-      var index = myselect.selectedIndex; // selectedIndex代表的是你所选中项的index
-      this.showIndexText = myselect.options[index].label;
-      console.log(this.showIndexText);
-    },
-    // 企业账户获取option的text
-    getValue(event) {
-      this.value = event.target.value;
-      console.log(this.value);
-      var myselect = document.getElementById("optionText");
-      var index = myselect.selectedIndex; // selectedIndex代表的是你所选中项的index
-      this.showComText = myselect.options[index].value;
-      console.log(this.showComText);
-    },
-    // 发送验证码
-    getAuthCode() {
-      this.sendAuthCode = false;
-      this.auth_time = 60;
-      var auth_timetimer = setInterval(() => {
-        this.auth_time--;
-        if (this.auth_time <= 0) {
-          this.sendAuthCode = true;
-          clearInterval(auth_timetimer);
-        }
-      }, 1000);
-      var params = new URLSearchParams();
-      params.append("access_token", this.access_token);
-      params.append("qdcrmUserId", this.qdcrmUserId);
-      params.append("phone", this.phone);
-      params.append("type", 2);
-      params.append("number", Math.random());
-      console.log(params);
-      // 请求验证码
-      axios
-        .post(`${BASE_URL}/msmng/api/vertifycode/sendVertifyCode`, params, {
-          header: {
-            "Access-Control-Allow-Origin": "*"
-          }
-        })
-        .then(response => {
-          console.log(response);
-          if (response.data.code == 400) {
-            Toast(response.data.message);
-          }
-        })
-        .catch(function(err) {
-          Toast(err.data.message);
-        });
-    },
-    // 提交个人账户信息
     onSubmit() {
+      if (!this.user) {
+        Toast("请输入真实姓名");
+        return;
+      }
+      if (!this.ID) {
+        Toast("请输入身份证号码");
+        return;
+      }
+      if (!/(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/.test(this.ID)) {
+        Toast("身份证号填写有误");
+        return false;
+      }
       if (!this.bankName) {
         Toast("请选择银行");
         return;
@@ -299,39 +226,22 @@ export default {
         Toast("请输入验证码");
         return;
       }
-      getRefreshToken();
-      var params = new URLSearchParams();
-      params.append("access_token", this.access_token);
-      params.append("qdcrmUserId", this.qdcrmUserId);
-      params.append("merchantId", this.merchantId);
-      params.append("mobile", this.phone);
-      params.append("holderName", this.user);
-      params.append("idCard", this.ID);
-      params.append("bankName", this.showIndexText);
-      params.append("bankCode", this.bankNumber);
-      params.append("vertifyCode", this.captcha);
-      params.append("number", Math.random());
-      console.log(params);
-      axios
-        .post(`${BASE_URL}/msmng/api/bankcard/addPersonalBankCard`, params, {
-          header: {
-            "Access-Control-Allow-Origin": "*"
-          }
-        })
-        .then(response => {
-          console.log(response.data);
-          if (response.data.code == 200) {
-            this.$router.push("/BKManagement");
-          } else {
-            Toast(response.data.message);
-          }
-        })
-        .catch(function(err) {
-          Toast(err.data.message);
-        });
+      let user = this.user;
+      console.log(user);
+      let BankCardsMsg = this.$qs.stringify({
+        user: this.user,
+        ID: this.ID,
+        bankName: this.bankName,
+        bankNumber: this.bankNumber,
+        phone: this.phone,
+        captcha: this.captcha
+      });
     },
-    // 提交企业账户信息
     next() {
+      let OPERATING = JSON.parse(window.localStorage.getItem("Operating"));
+      console.log(OPERATING);
+      let OPENING = JSON.parse(window.localStorage.getItem("opening"));
+      console.log(OPENING);
       if (!this.corporate) {
         Toast("请输入企业账户");
         return;
@@ -340,7 +250,7 @@ export default {
         Toast("请输入企业账号");
         return;
       }
-      if (!this.bankName) {
+      if (!this.whatbankName) {
         Toast("请选择银行");
         return;
       }
@@ -348,107 +258,34 @@ export default {
         Toast("请输入开户行");
         return;
       }
-      if (!this.Operating) {
+      if (!this.OPERATING) {
         Toast("请上传营业执照");
         return;
       }
-      if (!this.opening) {
+      if (!this.OPENING) {
         Toast("请上传开户证明");
         return;
       }
-      var params = new URLSearchParams();
-      params.append("access_token", this.access_token); // 访问令牌
-      params.append("qdcrmUserId", this.qdcrmUserId); // 商户号
-      params.append("merchantName", this.corporate); // 商户名（企业账号）
-      params.append("bankCode", this.Identification); // 银行卡号
-      params.append("bankName", this.showIndexText); // 开户行（下拉框）
-      params.append("branchName", this.openbankName); // 支行名（用户手动输入）
-      params.append("authImgbizLicense", this.Operating); // 营业执照
-      params.append("authImgOpProof", this.opening); // 开户证明
-      params.append("number", Math.random());
-      console.log(params);
-      getRefreshToken();
-      // 添加企业账户请求
-      axios
-        .post(`${BASE_URL}/msmng/api/bankcard/addBizBankCard`, params, {
-          header: {
-            "Access-Control-Allow-Origin": "*"
-          }
-        })
-        .then(response => {
-          console.log(response);
-          if (response.data.code == 200) {
-            this.$router.push("/BKManagement");
-          } else {
-            Toast(response.data.message);
-          }
-          if (response.data.code == 400) {
-            Toast(response.data.message);
-          }
-        })
-        .catch(function(err) {
-          Toast(err.data.message);
-        });
     }
   },
   /* 注册组件 */
   components: {
     VueClip
-  },
-  mounted() {
-    getRefreshToken;
-    queryTwoElementsResult()
-      .then(response => {
-        console.log(response.data.data);
-        let data = response.data.data;
-        if (data.status == 1) {
-          this.user = data.realName;
-          this.ID = data.idCardNum;
-          queryBankSup()
-            .then(response => {
-              console.log(response.data);
-              this.list = response.data.data;
-            })
-            .catch(function(error) {
-              console.log(error);
-            });
-        } else {
-          this.showError = true;
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
   }
 };
 </script>
 <style lang="less" scoped>
 @blue: #1c8cff;
 /* 头部 */
-.header {
-  width: 100%;
+.mint-header {
   height: 1.2rem;
-  line-height: 1.2rem;
   font-size: 0.4rem;
   font-weight: 100;
   background: @blue;
-  position: fixed;
-  top: 0;
-  text-align: center;
-  color: #fff;
-  .header_left {
-    width: 10%;
-    margin-left: 0.3rem;
-    font-size: 0.38rem;
-    float: left;
-  }
-  .p {
-    width: 90%;
-  }
 }
-// 验证码
-.glay {
-  background: #b0b0b0 !important;
+.header_left {
+  margin-left: 0.3rem;
+  font-size: 0.4rem;
 }
 .tabControl {
   position: absolute;
@@ -607,39 +444,8 @@ button {
 .btn {
   bottom: -1.2rem;
 }
-.alertMsg {
-  width: 8rem;
-  height: 4.5rem;
-  background: #fff;
-  border-radius: 8px; /* no */
-  text-align: center;
-  .alertMsgText {
-    width: 100%;
-    height: 3rem;
-    line-height: 3rem;
-    font-size: 0.45rem;
-  }
-  .box {
-    width: 35%;
-    float: left;
-    line-height: 1.2rem;
-    font-size: 0.35rem;
-    background: #1c8cff;
-    color: #fff;
-    border-radius: 5px; /* no */
-  }
-  .alertMsgForgetPassword {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-}
 </style>
 <style lang="less">
-textarea:disabled,
-input:disabled,
-option:disabled {
-  background-color: rgb(255, 255, 255);
-}
 .mint-header-title {
   overflow: visible !important;
 }

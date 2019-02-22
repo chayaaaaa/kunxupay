@@ -5,46 +5,33 @@
       <mt-button icon="back" @click="prev()" class="header_left" slot="left"></mt-button>
     </mt-header>
     <!-- 卡号详情列表 -->
-    <div class="bankDetail" v-if="showDetails==true">
+    <div class="bankDetail">
       <div class="Detail">
         <!-- 银行卡 -->
-        <li>
+        <li v-for="item in bankLists" :key="item.e">
           <p>
-            <img :src="iconPath">
+            <img src="@/assets/image/Mine/Wallet/ic.png">
           </p>
           <p>
-            {{bankName}}
-            <span v-if="status == 0">待验证</span>
-            <span v-if="status == 1">验证通过</span>
-            <span v-if="status == 2">验证不通过</span>
-            <span v-if="status == 3">已解绑</span>
+            {{item.title}}
+            <!-- <span>{{item.status}}</span> -->
           </p>
-          <p v-if="cardType==0">个人账号</p>
-          <p v-if="cardType==1">企业账号</p>
-          <p>{{cardNo}}</p>
+          <p>{{item.type}}</p>
+          <p>{{item.bankNumber}}</p>
         </li>
       </div>
       <ul>
         <li>
           单笔提现额度
-          <span>2000元</span>
+          <span>20000元</span>
         </li>
         <li>
           每日提现额度
-          <span>20000元</span>
+          <span>200000元</span>
         </li>
       </ul>
       <button @click="show = true">解除绑定</button>
     </div>
-    <!-- 提示框 -->
-    <mt-popup v-model="showAlert" popup-transition="popup-fade">
-      <div class="alertMsg">
-        <div class="alertMsgText">密码错误</div>
-        <div class="box alertMsgForgetPassword" @click="ForgetPassword()">忘记密码</div>
-        <div class="box retry" @click="retry()">重试一次</div>
-      </div>
-    </mt-popup>
-
     <van-popup v-model="show" :overlay="false">
       <div class="pay_password">
         <!-- 密码输入框 -->
@@ -54,18 +41,19 @@
             :value="value"
             v-model="value"
             @focus="showKeyboard = true"
-            close-button-text="取消"
+            close-button-text="完成"
           />
         </div>
         <!-- 确定框 -->
         <button @click="sumbitPwd()">提交</button>
         <!--键盘-->
+        <!--        <van-number-keyboard :show="show" @input="onInput" @delete="onDelete"/> -->
         <!-- 数字键盘 -->
         <van-number-keyboard
           :show="show"
           theme="custom"
           extra-key="."
-          close-button-text="取消"
+          close-button-text="完成"
           @blur="show = false"
           @input="onInput"
           @delete="onDelete"
@@ -74,19 +62,12 @@
         />
       </div>
     </van-popup>
-    <ul class="nothing" v-if="nothing == true">
-      <img src="@/assets/image/Manger/Trade/nothing.png">
-      <p>请耐心等候银行卡认证通过唷~~</p>
-    </ul>
   </div>
 </template>
 <script>
 import { Toast, MessageBox } from "mint-ui";
 import { PasswordInput, NumberKeyboard } from "vant";
 import "@/CSS/alert.css";
-import "@/CSS/alert.css";
-import { getRefreshToken, BASE_URL } from "@/api/api.js";
-const axios = require("axios");
 export default {
   name: "transactionDetails",
   data() {
@@ -95,25 +76,15 @@ export default {
       showKeyboard: true,
       show: false,
       inputValue: "",
-      iconPath: "",
-      bankName: "",
-      status: "",
-      id: "",
-      cardType: "",
-      cardNo: "",
-      itemDetails: [], // 传递过来的参数
-      showAlert: false, //
-      nothing: false, //认证还未通过
-      showDetails: true
+      bankLists: [
+        {
+          title: "中国工商银行",
+          type: "储蓄卡",
+          bankNumber: "**** **** **** 3560",
+          id: "1"
+        }
+      ]
     };
-  },
-  created() {
-    this.getParams();
-    getRefreshToken();
-  },
-  watch: {
-    // 监测路由变化,只要变化了就调用获取路由参数方法将数据存储本组件即可
-    $route: "getParams"
   },
   methods: {
     prev() {
@@ -121,103 +92,31 @@ export default {
     },
     onInput(key) {
       this.value = (this.value + key).slice(0, 6);
-      /*  console.log(this.value); */
+      console.log(this.value);
     },
     onDelete() {
       this.value = this.value.slice(0, this.value.length - 1);
-      /*  console.log(this.value); */
+      console.log(this.value);
     },
     sumbitPwd() {
-      console.log(this.value);
       if (!this.value) {
         MessageBox("请输入密码");
         return;
       }
-      if (this.value.length != 6) {
-        MessageBox("请输入6位数密码");
-      }
-      /*       if (!this.value) {
-        MessageBox("您未设置支付密码，请先设置支付密码");
+      /*    if(!this.value){
+          MessageBox("支付密码错误，请重试");
       } */
-
-      var params = new URLSearchParams();
-      params.append(
-        "access_token",
-        JSON.parse(window.localStorage.getItem("token")).access_token
-      );
-      params.append(
-        "qdcrmUserId",
-        JSON.parse(window.localStorage.getItem("userInfo")).qdcrmUserId
-      );
-      params.append("payPassword", this.value);
-
-      axios
-        .post(`${BASE_URL}/msmng/api/paypassword/checkPayPassword`, params, {
-          header: {
-            "Access-Control-Allow-Origin": "*"
-          }
-        })
-        .then(response => {
-          console.log(response.data);
-          let password = response.data.data;
-          if (password == 0) {
-            this.showAlert = true;
-          } else {
-            MessageBox("解绑成功,稍后生效");
-          }
-        })
-        .catch(function(err) {
-          Toast(err.message);
-        });
+      /*  if(!this.value){
+          MessageBox("您未设置支付密码，请先设置支付密码");
+      } */
       this.value = "";
-    },
-    getParams() {
-      // 取到路由带过来的参数
-      var routerParams = this.$route.params.id;
-      var list = this.$route.params.item;
-      this.itemDetails = list;
-      console.log(this.itemDetails);
-      this.iconPath = list.iconPath;
-      this.bankName = list.bankName;
-      this.status = list.status;
-      this.cardType = list.cardType;
-      this.cardNo = list.cardNo;
-    },
-    ForgetPassword() {
-      this.$router.push("/forgetPWD");
-    },
-    retry() {
-      this.showAlert = false;
-      this.show = true;
-    }
-  },
-  mounted() {
-    getRefreshToken();
-    if (this.itemDetails == undefined) {
-      this.showDetails = false;
-      this.nothing = true;
+      this.show = false;
     }
   }
 };
 </script>
 <style lang="less" scoped>
 @blue: #1c8cff;
-/* 列表 */
-.nothing {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 100%;
-  background: #f5f5f5 !important;
-  text-align: center;
-  img {
-    width: 40%;
-    margin-top: 5rem;
-  }
-  p {
-    margin-top: 1rem;
-  }
-}
 .van-popup {
   transform: none;
   button {
@@ -233,35 +132,7 @@ export default {
     border-radius: 5px; /* no */
   }
 }
-.mint-popup {
-  background: none;
-}
-.alertMsg {
-  width: 8rem;
-  height: 4.5rem;
-  background: #fff;
-  border-radius: 8px; /* no */
-  text-align: center;
-  .alertMsgText {
-    width: 100%;
-    height: 3rem;
-    line-height: 3rem;
-    font-size: 0.45rem;
-  }
-  .box {
-    width: 35%;
-    float: left;
-    line-height: 1.2rem;
-    font-size: 0.35rem;
-    background: #1c8cff;
-    color: #fff;
-    border-radius: 5px; /* no */
-  }
-  .alertMsgForgetPassword {
-    margin-left: 10%;
-    margin-right: 10%;
-  }
-}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;

@@ -8,6 +8,21 @@
     <mt-popup v-model="showOrgan" popup-transition="popup-fade">
       <!-- title -->
       <div class="title">选 择 代 理 商</div>
+<!--       <select
+        class="select"
+        v-model="optionValue"
+        :label-in-value="true"
+        @change="getIdValue($event)"
+        id="optionText"
+      >
+        <option selected="selected" disabled="disabled" style="display: none" value>请选择代理商</option>
+        <option
+          v-for="(item,index) in queryAgents"
+          :key="index"
+          :value="item.id"
+          :label="item.text"
+        >{{item.text}}</option>
+      </select> -->
        <van-picker :columns="queryAgents" @change="onChangeone"/>
       <div class="box cancel" @click="cancel()">取消</div>
       <div class="box Confirm" @click="Confirm()">确认</div>

@@ -231,7 +231,6 @@ export default {
     onChange(picker, value, index) {
       this.textvalue = value.text;
       this.value = value.id;
-      console.log(value)
       console.log(this.textvalue);
       console.log(this.value);
       console.log(index);

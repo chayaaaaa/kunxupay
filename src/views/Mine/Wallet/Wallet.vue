@@ -10,7 +10,7 @@
       <p>
         <img src="@/assets/image/Mine/ic-balance.png">账户余额
       </p>
-      <p>{{totalCashMoney}}</p>
+      <p>￥55069.58</p>
       <ul>
         <li @click="goToBankCardPages()">银行卡</li>
         <li @click="goTowithDrawPages()">提现</li>
@@ -30,23 +30,23 @@
     <!-- 详细 -->
     <div class="remaining_detail" v-show="current==1 || current==2">
       <li>总余额(元)</li>
-      <li v-if="current==1">{{ownerBalanceMoney}}</li>
-      <li v-if="current==2">{{lowerBalanceMoney}}</li>
+      <li v-if="current==1">25600.58</li>
+      <li v-if="current==2">28888.58</li>
       <ul class="left">
         <p>服务费返现(元)</p>
-        <p v-if="current==1">{{ownerDpositMoney}}</p>
-        <p v-if="current==2">{{lowerDpositMoney}}</p>
+        <p v-if="current==1">25600.58</p>
+        <p v-if="current==2">28888.58</p>
         <p>激活奖励(元)</p>
-        <p v-if="current==1">{{ownerMposMoney}}</p>
-        <p v-if="current==2">{{lowerMposMoney}}</p>
+        <p v-if="current==1">25600.58</p>
+        <p v-if="current==2">28888.58</p>
       </ul>
       <ul class="right">
         <p>刷卡奖励(元)</p>
-        <p v-if="current==1">{{ownerSwipingCardMoney}}</p>
-        <p v-if="current==2">{{lowerSwipingCardMoney}}</p>
+        <p v-if="current==1">25600.58</p>
+        <p v-if="current==2">28888.58</p>
         <p>分润收益(元)</p>
-        <p v-if="current==1">{{ownerProfitMoney}}</p>
-        <p v-if="current==2">{{lowerProfitMoney}}</p>
+        <p v-if="current==1">25600.58</p>
+        <p v-if="current==2">28888.58</p>
       </ul>
     </div>
     <!-- 资金明细 -->
@@ -55,89 +55,23 @@
 </template>
 <script>
 import financialDetail from "@/views/Mine/Wallet/financialDetail.vue";
-import { MessageBox, Toast } from "mint-ui";
-import "@/CSS/alert.css";
-import {
-  queryDrawPermissions,
-  getCashDetails,
-  getRefreshToken,
-  BASE_URL
-} from "@/api/api.js";
 export default {
   name: "Wallet",
   data() {
     return {
-      current: 1,
-      allowDraw: "", // 是否具备提现权限（0/否 1/是）
-      allowSubDraw: "", // 是否开启下级提现权限（0/否 1/是）
-      meetCashNeeds: "", // 是否满足提现金额需求（0/否 1/是）
-      totalCashMoney: "", // 账户余额
-      // 自营余额
-      ownerBalanceMoney: "", // 总余额
-      ownerDpositMoney: "", // 服务费返现
-      ownerMposMoney: "", // 激活奖励
-      ownerSwipingCardMoney: "", // 刷卡奖励
-      ownerProfitMoney: "", //  分润余额
-      // 下级余额
-      lowerBalanceMoney: "", // 总余额
-      lowerDpositMoney: "", // 服务费返现
-      lowerMposMoney: "", // 激活奖励
-      lowerSwipingCardMoney: "", // 刷卡奖励
-      lowerProfitMoney: "" // 分润余额
+      current: 1
     };
   },
   methods: {
     prev() {
       history.go(-1);
     },
-    goToBankCardPages() {
-      this.$router.push("/BKManagement");
+    goToBankCardPages(){
+      this.$router.push('/BKManagement')
     },
-    goTowithDrawPages() {
-      if (
-        this.allowDraw == 0 ||
-        this.meetCashNeeds == 0 ||
-        this.allowSubDraw == 0
-      ) {
-        MessageBox("不可提现");
-      } else {
-        this.$router.push("/withDraw");
-      }
+    goTowithDrawPages(){
+       this.$router.push('/withDraw')
     }
-  },
-  mounted() {
-    getRefreshToken();
-    queryDrawPermissions()
-      .then(response => {
-        console.log(response.data);
-        this.allowDraw = response.data.allowDraw;
-        this.allowSubDraw = response.data.allowSubDraw;
-        this.meetCashNeeds = response.data.meetCashNeeds;
-      })
-      .catch(function(error) {
-        console.log(response.message);
-      });
-    getCashDetails()
-      .then(response => {
-        console.log(response.data.data);
-        let res = response.data.data;
-        this.totalCashMoney = res.totalCashMoney;
-        // 自营
-        this.ownerBalanceMoney = res.ownerBalanceMoney;
-        this.ownerDpositMoney = res.ownerDpositMoney;
-        this.ownerMposMoney = res.ownerMposMoney;
-        this.ownerSwipingCardMoney = res.ownerSwipingCardMoney;
-        this.ownerProfitMoney = res.ownerProfitMoney;
-        // 下级
-        this.lowerBalanceMoney = res.lowerBalanceMoney;
-        this.lowerDpositMoney = res.lowerDpositMoney;
-        this.lowerMposMoney = res.lowerMposMoney;
-        this.lowerSwipingCardMoney = res.lowerSwipingCardMoney;
-        this.lowerProfitMoney = res.lowerProfitMoney;
-      })
-      .catch(function(error) {
-        console.log(response.message);
-      });
   },
   /* 注册组件 */
   components: {

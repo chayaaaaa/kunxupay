@@ -3,7 +3,7 @@ const path = require('path')
 const utils = require('./utils')
 const config = require('../config')
 const webpack = require('webpack')
-const vueLoaderConfig = require('./vue-loader.conf')
+const vueLoaderPlugin = require('./vue-loader.conf')
 
 function resolve(dir) {
   return path.join(__dirname, '..', dir)
@@ -12,12 +12,18 @@ function resolve(dir) {
 
 
 module.exports = {
+ /*  mode: 'none', */
   context: path.resolve(__dirname, '../'),
+  // 入口文件配置项
   entry: {
-    app: './src/main.js'
+    'app': '/src/main.js'
   },
   output: {
+    //这里要放的是静态资源CDN的地址
+    publicPath: '/',
+    // 打包路径
     path: config.build.assetsRoot,
+    // 打包文件名称 单文件输出 ，如果多文件可在 entry :{} ,这里 filename: '[name].js'
     filename: '[name].js',
     publicPath: process.env.NODE_ENV === 'production'
       ? config.build.assetsPublicPath
@@ -28,18 +34,21 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+/*       'common': resolve('src/common') */
     }
   },
+  // 插件
   plugins: [new webpack.ProvidePlugin({
-    $:'jquery',
-    jQuery:'jquery'
+    $: 'jquery',
+    jQuery: 'jquery'
   })],
+  // 模块：解读CSS、图片
   module: {
     rules: [
       {
         test: /\.vue$/,
         loader: 'vue-loader',
-        options: vueLoaderConfig
+        options: vueLoaderPlugin
       },
       {
         test: /\.js$/,
@@ -50,7 +59,7 @@ module.exports = {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,
         loader: 'url-loader',
         options: {
-          limit: 10000,
+          limit: 1 * 1024,
           name: utils.assetsPath('img/[name].[hash:7].[ext]')
         }
       },

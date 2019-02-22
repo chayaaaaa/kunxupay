@@ -196,13 +196,6 @@ const routes = [
     meta: {
       required: true,
     }
-  }, {
-    // 设置页面
-    path: '/forgetPWD',
-    component: resolve => require(['@/views/Mine/Setting/forgetPWD.vue'], resolve),
-    meta: {
-      required: true,
-    }
   }, { // 钱包页面
     path: '/Wallet',
     component: resolve => require(['@/views/Mine/Wallet/Wallet.vue'], resolve),
@@ -223,7 +216,6 @@ const routes = [
     }
   }, { // 银行卡明细页面
     path: '/transactionDetails',
-    name: 'transactionDetails',
     component: resolve => require(['@/views/Mine/Wallet/bankCards/transactionDetails.vue'], resolve),
     meta: {
       required: true,
